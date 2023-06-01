@@ -19,8 +19,9 @@ import useSWR from "swr";
 
 export default function Joke() {
   const [id, setId] = useState(0);
-
-  const { data } = useSWR(
+  // we replace the former custom hook with the useSWRR hook and deconstruct the data from the hook
+  // ! see the the customized fetcher function in _app.js to support error handling
+  const { data, error, isLoading } = useSWR(
     `https://example-apis.vercel.app/api/bad-jokes/${id}`
   );
 
@@ -32,8 +33,18 @@ export default function Joke() {
     setId(data.nextId);
   }
 
-  if (!data) {
+  if (isLoading) {
     return <h1>Loading...</h1>;
+  }
+
+  // only supported when fetcher function is customized
+  if (error) {
+    return (
+      <h1>
+        An error occurred: <br />
+        {error.message}
+      </h1>
+    );
   }
 
   return (
